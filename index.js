@@ -42,6 +42,49 @@ async function run() {
     const usersCollection = database.collection("users");
     const listingsCollection = database.collection("listings");
     const ordersCollection = database.collection("orders");
+
+    // ============== LISTINGS API ==============
+
+    // Add new listing
+    app.post("/listings", async (req, res) => {
+      try {
+        const listing = req.body;
+
+        // Add created timestamp
+        listing.createdAt = new Date();
+
+        const result = await listingsCollection.insertOne(listing);
+        res.status(201).json({
+          success: true,
+          message: "Listing created successfully",
+          insertedId: result.insertedId,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to create listing",
+          error: error.message,
+        });
+      }
+    });
+
+    // Get all listings
+    app.get("/listings", async (req, res) => {
+      try {
+        const listings = await listingsCollection.find().toArray();
+        res.json({
+          success: true,
+          count: listings.length,
+          data: listings,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to fetch listings",
+          error: error.message,
+        });
+      }
+    });
   } catch (err) {
     console.log("Error connecting to MongoDB:", err);
   }
