@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config();
+const { MongoClient, ServerApiVersion } = require("mongodb");
 
 // app initialize
 const app = express();
@@ -9,10 +11,32 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Test route
-app.get("/", (req, res) => {
-  res.send("PawMart Server is Running");
+// MongoDB Connection URI
+const uri = process.env.MONGODB_URI;
+
+// Create MongoDB Client
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
 });
+
+async function run() {
+  try {
+    // Connect to MongoDB
+    await client.connect();
+    console.log("Connected to MongoDB successfully!");
+
+    // Testing route
+    app.get("/", (req, res) => {
+      res.send("PawMart Server is Running and connected to MongoDB");
+    });
+  } finally {
+  }
+}
+run().catch(console.dir);
 
 // Export the app for Vercel
 module.exports = app;
