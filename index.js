@@ -246,6 +246,31 @@ async function run() {
         });
       }
     });
+
+    // Get orders by user email
+    app.get("/orders/user/:email", async (req, res) => {
+      try {
+        const email = req.params.email;
+        const query = { email: email };
+
+        const orders = await ordersCollection
+          .find(query)
+          .sort({ createdAt: -1 })
+          .toArray();
+
+        res.json({
+          success: true,
+          count: orders.length,
+          data: orders,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to fetch user orders",
+          error: error.message,
+        });
+      }
+    });
   } catch (err) {
     console.log("Error connecting to MongoDB:", err);
   }
