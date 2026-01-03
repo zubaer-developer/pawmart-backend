@@ -176,6 +176,29 @@ async function run() {
         });
       }
     });
+
+    // Get recent 6 listings (for homepage)
+    app.get("/listings-recent", async (req, res) => {
+      try {
+        const listings = await listingsCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .limit(6)
+          .toArray();
+
+        res.json({
+          success: true,
+          count: listings.length,
+          data: listings,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to fetch recent listings",
+          error: error.message,
+        });
+      }
+    });
   } catch (err) {
     console.log("Error connecting to MongoDB:", err);
   }
