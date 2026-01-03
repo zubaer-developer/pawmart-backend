@@ -199,6 +199,53 @@ async function run() {
         });
       }
     });
+
+    // ============== ORDERS API ==============
+
+    // Create new order
+    app.post("/orders", async (req, res) => {
+      try {
+        const order = req.body;
+        // Add timestamps and default status
+        order.status = "pending";
+        order.createdAt = new Date();
+
+        const result = await ordersCollection.insertOne(order);
+        res.status(201).json({
+          success: true,
+          message: "Order placed successfully",
+          insertedId: result.insertedId,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to place order",
+          error: error.message,
+        });
+      }
+    });
+
+    // Get all orders (Admin)
+    app.get("/orders", async (req, res) => {
+      try {
+        const orders = await ordersCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .toArray();
+
+        res.json({
+          success: true,
+          count: orders.length,
+          data: orders,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to fetch orders",
+          error: error.message,
+        });
+      }
+    });
   } catch (err) {
     console.log("Error connecting to MongoDB:", err);
   }
