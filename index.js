@@ -11,6 +11,11 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Testing route
+app.get("/", (req, res) => {
+  res.send("PawMart Server is Running and connected to MongoDB");
+});
+
 // MongoDB Connection URI
 const uri = process.env.MONGODB_URI;
 
@@ -28,20 +33,18 @@ async function run() {
     // Connect to MongoDB
     await client.connect();
     console.log("Connected to MongoDB successfully!");
-
-    // Testing route
-    app.get("/", (req, res) => {
-      res.send("PawMart Server is Running and connected to MongoDB");
-    });
-
-    // Start server for local testing
-    if (require.main === module) {
-      app.listen(port, () => {
-        console.log(`PawMart Server is running on port ${port}`);
-      });
-    }
   } catch (err) {
     console.log("Error connecting to MongoDB:", err);
   }
 }
 run().catch(console.dir);
+
+// Start server for local testing
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`PawMart Server is running on port ${port}`);
+  });
+}
+
+// Export the app for Vercel
+module.exports = app;
