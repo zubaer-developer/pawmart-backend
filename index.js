@@ -271,6 +271,41 @@ async function run() {
         });
       }
     });
+
+    // Update order status
+    app.put("/orders/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const updatedData = req.body;
+
+        delete updatedData._id;
+        updatedData.updatedAt = new Date();
+
+        const result = await ordersCollection.updateOne(query, {
+          $set: updatedData,
+        });
+
+        if (result.matchedCount === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "Order not found",
+          });
+        }
+
+        res.json({
+          success: true,
+          message: "Order updated successfully",
+          modifiedCount: result.modifiedCount,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to update order",
+          error: error.message,
+        });
+      }
+    });
   } catch (err) {
     console.log("Error connecting to MongoDB:", err);
   }
