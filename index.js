@@ -36,6 +36,12 @@ async function run() {
     // Connect to MongoDB
     await client.connect();
     console.log("Connected to MongoDB successfully!");
+
+    // Database and Collections
+    const database = client.db("pawmartDB");
+    const usersCollection = database.collection("users");
+    const listingsCollection = database.collection("listings");
+    const ordersCollection = database.collection("orders");
   } catch (err) {
     console.log("Error connecting to MongoDB:", err);
   }
