@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 // app initialize
 const app = express();
@@ -76,6 +76,33 @@ async function run() {
           success: true,
           count: listings.length,
           data: listings,
+        });
+
+        // Get single listing by ID
+        app.get("/listings/:id", async (req, res) => {
+          try {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const listing = await listingsCollection.findOne(query);
+
+            if (!listing) {
+              return res.status(404).json({
+                success: false,
+                message: "Listing not found",
+              });
+            }
+
+            res.json({
+              success: true,
+              data: listing,
+            });
+          } catch (error) {
+            res.status(500).json({
+              success: false,
+              message: "Failed to fetch listing",
+              error: error.message,
+            });
+          }
         });
       } catch (error) {
         res.status(500).json({
