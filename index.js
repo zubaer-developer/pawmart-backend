@@ -148,6 +148,34 @@ async function run() {
         });
       }
     });
+
+    // Delete listing by ID
+    app.delete("/listings/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await listingsCollection.deleteOne(query);
+
+        if (result.deletedCount === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "Listing not found",
+          });
+        }
+
+        res.json({
+          success: true,
+          message: "Listing deleted successfully",
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to delete listing",
+          error: error.message,
+        });
+      }
+    });
   } catch (err) {
     console.log("Error connecting to MongoDB:", err);
   }
