@@ -33,13 +33,11 @@ async function run() {
     app.get("/", (req, res) => {
       res.send("PawMart Server is Running and connected to MongoDB");
     });
-  } finally {
+  } catch (err) {
+    console.error(err);
   }
 }
 run().catch(console.dir);
-
-// Export the app for Vercel
-module.exports = app;
 
 // Start server for local testing
 if (require.main === module) {
