@@ -13,7 +13,10 @@ app.use(express.json());
 
 // Testing route
 app.get("/", (req, res) => {
-  res.send("PawMart Server is Running and connected to MongoDB");
+  res.send({
+    message: "Server is working perfectly!",
+    timestamp: new Date(),
+  });
 });
 
 // MongoDB Connection URI
