@@ -33,15 +33,15 @@ async function run() {
     app.get("/", (req, res) => {
       res.send("PawMart Server is Running and connected to MongoDB");
     });
+
+    // Start server for local testing
+    if (require.main === module) {
+      app.listen(port, () => {
+        console.log(`PawMart Server is running on port ${port}`);
+      });
+    }
   } catch (err) {
-    console.error(err);
+    console.log("Error connecting to MongoDB:", err);
   }
 }
 run().catch(console.dir);
-
-// Start server for local testing
-if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`PawMart Server is running on port ${port}`);
-  });
-}
