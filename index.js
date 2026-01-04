@@ -337,6 +337,25 @@ async function run() {
 
     // ============== USERS API ==============
 
+    // Check if user is admin
+    app.get("/users/admin/:email", async (req, res) => {
+      try {
+        const email = req.params.email;
+        const query = { email: email };
+        const user = await usersCollection.findOne(query);
+
+        const isAdmin = user?.role === "admin";
+        res.json({
+          admin: isAdmin,
+        });
+      } catch (error) {
+        res.status(500).json({
+          admin: false,
+          error: error.message,
+        });
+      }
+    });
+
     // Save new user to database
     app.post("/users", async (req, res) => {
       try {
