@@ -306,6 +306,87 @@ async function run() {
         });
       }
     });
+
+    // Delete order
+    app.delete("/orders/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await ordersCollection.deleteOne(query);
+
+        if (result.deletedCount === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "Order not found",
+          });
+        }
+
+        res.json({
+          success: true,
+          message: "Order deleted successfully",
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to delete order",
+          error: error.message,
+        });
+      }
+    });
+
+    // ============== USERS API ==============
+
+    // Save new user to database
+    app.post("/users", async (req, res) => {
+      try {
+        const user = req.body;
+        const existingUser = await usersCollection.findOne({
+          email: user.email,
+        });
+        if (existingUser) {
+          return res.json({
+            success: true,
+            message: "User already exists",
+            insertedId: null,
+          });
+        }
+        // Add default role
+        user.role = "user";
+        user.createdAt = new Date();
+
+        const result = await usersCollection.insertOne(user);
+        res.status(201).json({
+          success: true,
+          message: "User created successfully",
+          insertedId: result.insertedId,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to create user",
+          error: error.message,
+        });
+      }
+    });
+
+    // Get all users (Admin only)
+    app.get("/users", async (req, res) => {
+      try {
+        const users = await usersCollection.find().toArray();
+        res.json({
+          success: true,
+          count: users.length,
+          data: users,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to fetch users",
+          error: error.message,
+        });
+      }
+    });
   } catch (err) {
     console.log("Error connecting to MongoDB:", err);
   }
