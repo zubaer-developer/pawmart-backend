@@ -387,6 +387,91 @@ async function run() {
         });
       }
     });
+
+    // Get single user by email
+    app.get("/users/:email", async (req, res) => {
+      try {
+        const email = req.params.email;
+        const query = { email: email };
+        const user = await usersCollection.findOne(query);
+        if (!user) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found",
+          });
+        }
+
+        res.json({
+          success: true,
+          data: user,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to fetch user",
+          error: error.message,
+        });
+      }
+    });
+
+    // Make user admin
+    app.put("/users/admin/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await usersCollection.updateOne(query, {
+          $set: { role: "admin" },
+        });
+
+        if (result.matchedCount === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found",
+          });
+        }
+
+        res.json({
+          success: true,
+          message: "User promoted to admin successfully",
+          modifiedCount: result.modifiedCount,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to update user role",
+          error: error.message,
+        });
+      }
+    });
+
+    // Delete user
+    app.delete("/users/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await usersCollection.deleteOne(query);
+
+        if (result.deletedCount === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found",
+          });
+        }
+
+        res.json({
+          success: true,
+          message: "User deleted successfully",
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to delete user",
+          error: error.message,
+        });
+      }
+    });
   } catch (err) {
     console.log("Error connecting to MongoDB:", err);
   }
