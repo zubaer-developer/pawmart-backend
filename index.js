@@ -183,7 +183,7 @@ async function run() {
         const listings = await listingsCollection
           .find()
           .sort({ createdAt: -1 })
-          .limit(6)
+          .limit(4)
           .toArray();
 
         res.json({
