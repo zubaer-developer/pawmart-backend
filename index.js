@@ -68,7 +68,7 @@ async function run() {
       }
     });
 
-    // Get all listings
+    // Get ALL listings
     app.get("/listings", async (req, res) => {
       try {
         const listings = await listingsCollection.find().toArray();
@@ -77,37 +77,37 @@ async function run() {
           count: listings.length,
           data: listings,
         });
-
-        // Get single listing by ID
-        app.get("/listings/:id", async (req, res) => {
-          try {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) };
-            const listing = await listingsCollection.findOne(query);
-
-            if (!listing) {
-              return res.status(404).json({
-                success: false,
-                message: "Listing not found",
-              });
-            }
-
-            res.json({
-              success: true,
-              data: listing,
-            });
-          } catch (error) {
-            res.status(500).json({
-              success: false,
-              message: "Failed to fetch listing",
-              error: error.message,
-            });
-          }
-        });
       } catch (error) {
         res.status(500).json({
           success: false,
           message: "Failed to fetch listings",
+          error: error.message,
+        });
+      }
+    });
+
+    // 2 Get SINGLE listing by ID
+    app.get("/listings/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const listing = await listingsCollection.findOne(query);
+
+        if (!listing) {
+          return res.status(404).json({
+            success: false,
+            message: "Listing not found",
+          });
+        }
+
+        res.json({
+          success: true,
+          data: listing,
+        });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to fetch listing",
           error: error.message,
         });
       }
