@@ -11,14 +11,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Testing route
-app.get("/", (req, res) => {
-  res.send({
-    message: "Server is working perfectly!",
-    timestamp: new Date(),
-  });
-});
-
 // MongoDB Connection URI
 const uri = process.env.MONGODB_URI;
 
@@ -52,11 +44,24 @@ async function run() {
 run().catch(console.dir);
 
 // Middleware to ensure DB is connected before handling requests
-app.use((req, res, next) => {
-  if (!listingsCollection && req.path !== "/") {
-    return res.status(503).send("Database connection not established yet.");
-  }
-  next();
+// app.use(async (req, res, next) => {
+//   try {
+//     await run();
+//     next();
+//   } catch (error) {
+//     res.status(500).json({
+//       message: "Database connection failed",
+//       error: error.message,
+//     });
+//   }
+// });
+
+// Testing route
+app.get("/", (req, res) => {
+  res.send({
+    message: "Server is working perfectly!",
+    timestamp: new Date(),
+  });
 });
 
 // ============== LISTINGS API ==============
